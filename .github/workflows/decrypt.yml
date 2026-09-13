@@ -1,0 +1,31 @@
+name: Desencriptar Cartolas Bancarias
+
+on:
+  schedule:
+    # Corre los días 5 y 12 de cada mes a las 14:00 UTC (11:00 AM Chile)
+    - cron: '0 14 5,12 * *'
+  workflow_dispatch: # Permite ejecución manual con un botón en GitHub
+
+jobs:
+  decrypt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        run: |
+          pip install pypdf google-api-python-client google-auth
+
+      - name: Ejecutar desencriptación
+        env:
+          GDRIVE_SERVICE_ACCOUNT_KEY: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_KEY }}
+        run: |
+          python decrypt_cartolas.py
